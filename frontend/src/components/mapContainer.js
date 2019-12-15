@@ -24,15 +24,11 @@ class MapContainer extends React.Component {
   })
   .catch(error => console.log('error:', error)); 
 }
-componentDidUpdate() {
-  console.log("componentDidUpdate");
-}
 
 displayMarkers = () => {
       let arr = this.props.points.map((point, index) => {
         return ({lat: point.latitude, lng: point.longitude})
       });
-      console.log(arr);
       return {
         positions: arr,
         options: {
@@ -56,7 +52,7 @@ displayMarkers = () => {
     return (
       <div style={mapStyle}>
       <GoogleMap
-      bootstrapURLKeys={{key: 'AIzaSyCR1rxt8xnpURsVA3bDm8eukPy4EmW9icQ'}}
+      bootstrapURLKeys={{key: 'AIzaSyDPz11ka9meqi4YSy2gSSQEL3ZAWadNntg'}}
       zoom={1}
       center={{ lat: 4, lng: 5}}
       margin={[100, 100, 100, 200]}
@@ -70,7 +66,6 @@ displayMarkers = () => {
         scaleControl: true, 
       }}
       >
-      {/* {this.displayMarkers()} */}
       </GoogleMap>
       </div>
      

@@ -31,7 +31,6 @@ class AddProblemForm extends React.Component {
         if (!err) {
           let data;
           if(this.state.selectedFile) {
-            console.log("ka filey: ",this.state.selectedFile.name);
             data = new FormData();
             data.append('file', this.state.selectedFile);
           }
@@ -56,8 +55,6 @@ class AddProblemForm extends React.Component {
         }).then(response => response.json())
         .then(resp => {
           if(this.state.selectedFile !== null) {
-            console.log("mtav uremn data ka");
-            console.log('data: ', data);
             axios({
               method: 'post',
               url: `http://localhost:3001/upload_file/${resp.id}`,

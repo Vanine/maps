@@ -32,12 +32,10 @@ router.post('/add_problem', (req, res) => {
           longitude: obj.longitude,
         });
         point.save().then((resp) => {
-          console.log('Saved point');
         }).catch(err => {
           return err;
     })
         problem.save().then((resp) => {
-          console.log('Saved problem aranc nkar');
           return res.json({id: resp._id});
         }).catch(err => {
           return err;
@@ -46,9 +44,7 @@ router.post('/add_problem', (req, res) => {
 });
 router.post('/upload_file/:id', (req, res) => {
     upload(req, res, function (err) {
-      console.log('reqi filei data: ', req.file.path)
       if(req.file) {
-        console.log('mtav');
       if (err instanceof multer.MulterError) {
           return res.status(500).json(err)
       } else if (err) {
