@@ -5,7 +5,6 @@ import { Form, Input, Button, Select, InputNumber } from 'antd';
 import { connect } from "react-redux";
 import { addPoint } from '../actions/addpoint';
 import { setPoints } from '../actions/setpoints';
-import { updatePoint } from '../actions/updatepoint';
 import FormItem from 'antd/lib/form/FormItem';
 const { Option } = Select;
 const { TextArea } = Input;
@@ -30,8 +29,12 @@ class AddProblemForm extends React.Component {
       e.preventDefault();
       this.props.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
-          const data = new FormData() 
-          data.append('file', this.state.selectedFile);
+          let data;
+          if(this.state.selectedFile) {
+            console.log("ka filey: ",this.state.selectedFile.name);
+            data = new FormData();
+            data.append('file', this.state.selectedFile);
+          }
           const newProblem = {
             category: values.category,
             longitude: values.longitude,
@@ -52,30 +55,19 @@ class AddProblemForm extends React.Component {
                 },
         }).then(response => response.json())
         .then(resp => {
-          if(data) {
+          if(this.state.selectedFile !== null) {
+            console.log("mtav uremn data ka");
+            console.log('data: ', data);
             axios({
               method: 'post',
               url: `http://localhost:3001/upload_file/${resp.id}`,
               data: data,
-            })
+            }).then(() => this.setState({selectedFile: null}))
           }
       })
         .then(() => {
-        fetch("http://localhost:3001/add_point", {
-          method: 'POST',
-          body: JSON.stringify(newPoint),
-          headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-              },
-        }).then(res => {
-          if(res.status === 200) {
-            this.props.addPoint(newPoint);
-          }
-          else if(res.status === 201) {
-            this.props.updatePoint(newPoint);
-          }
-          res.json()})
-        .then(res => {})
+          this.setState({selectedFile: null});
+          this.props.addPoint(newPoint);
       })
         .catch(error => console.log('error:', error));
       }
@@ -98,11 +90,6 @@ class AddProblemForm extends React.Component {
           marginTop: '3%',
           width: '50%'
       }
-      const inputStyle = {
-        marginLeft: '20%',
-        marginTop: '3%',
-        width: '50%'
-    }
       const formItemLayout = {
         labelCol: {
           xs: { span: 24 },
@@ -129,7 +116,7 @@ class AddProblemForm extends React.Component {
         <Form {...formItemLayout} onSubmit={this.handleSubmit} className='form' style={formStyle}>
              <Form.Item label={<span>Category</span>}>
              {getFieldDecorator('category', {
-                initialValue: 'Garbage disposal is not done on time'
+                initialValue: '0'
             })(<Select style={{ width: '100%' }} onChange={this.handleChange}>
                 <Option value="0">Garbage disposal is not done on time</Option>
                 <Option value="1">Trash has no lid</Option>
@@ -228,8 +215,5 @@ export default connect(
     }),
     setPoints: ((data) => {
       dispatch(setPoints(data))
-    }),
-    updatePoint: ((data) => {
-      dispatch(updatePoint(data))
     }),
 }))(WrappedAddProblemForm);

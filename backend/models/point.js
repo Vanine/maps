@@ -1,10 +1,6 @@
 const mongoose = require('mongoose');
 
 const PointSchema = new mongoose.Schema({
-  frequency: {
-    type: Number,
-    required: true
-  },
   latitude: {
     type: Number,
     required: true

@@ -2,6 +2,7 @@ const router = require('express').Router();
 const Problem = require('../models/problem');
 const multer = require('multer');
 const fs = require('fs');
+const Point = require('../models/point');
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -26,28 +27,44 @@ router.post('/add_problem', (req, res) => {
           latitude: obj.latitude,
           longitude: obj.longitude,
         })
-        problem.save().then((resp)=>{
-          res.json({id: resp._id});
+        var point = new Point({
+          latitude: obj.latitude,
+          longitude: obj.longitude,
+        });
+        point.save().then((resp) => {
+          console.log('Saved point');
         }).catch(err => {
           return err;
     })
+        problem.save().then((resp) => {
+          console.log('Saved problem aranc nkar');
+          return res.json({id: resp._id});
+        }).catch(err => {
+          return err;
+    })
+    
 });
 router.post('/upload_file/:id', (req, res) => {
-  upload(req, res, function (err) {
-    if (err instanceof multer.MulterError) {
-        return res.status(500).json(err)
-    } else if (err) {
-        return res.status(500).json(err)
-    }
-  Problem.findOne({_id: req.params.id}).then(problem => {
-    if(req.file) {
-      problem.img.data = fs.readFileSync(req.file.path);
-      problem.save().then(() => console.log('Saved')).catch(err => {
-        console.log(err);
+    upload(req, res, function (err) {
+      console.log('reqi filei data: ', req.file.path)
+      if(req.file) {
+        console.log('mtav');
+      if (err instanceof multer.MulterError) {
+          return res.status(500).json(err)
+      } else if (err) {
+          return res.status(500).json(err)
+      }
+    Problem.findOne({_id: req.params.id}).then(problem => {
+      if(problem) {
+        problem.img.data = fs.readFileSync(req.file.path);
+        problem.save().then(() => console.log('Saved image')).catch(err => {
+          console.log(err);
       })
-    }
-  })
-})
+      } 
+    })
+   }
+ })
+ res.json({'message': 'ok'});
 })
 
 module.exports = router;  
