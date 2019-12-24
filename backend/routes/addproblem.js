@@ -13,7 +13,7 @@ filename: function (req, file, cb) {
 }
 })
 
-var upload = multer({ storage: storage }).single('file')
+var upload = multer({ storage: storage }).array('files', 6);
 
 router.post('/add_problem', (req, res) => {
   const url = req.protocol + '://' + req.get('host')
@@ -33,34 +33,37 @@ router.post('/add_problem', (req, res) => {
         });
         point.save().then((resp) => {
         }).catch(err => {
-          return err;
+          return res.json({"error" : err});
     })
         problem.save().then((resp) => {
           return res.json({id: resp._id});
         }).catch(err => {
           return err;
-    })
-    
+      })
 });
 router.post('/upload_file/:id', (req, res) => {
-    upload(req, res, function (err) {
-      if(req.file) {
-      if (err instanceof multer.MulterError) {
-          return res.status(500).json(err)
-      } else if (err) {
-          return res.status(500).json(err)
-      }
+  upload(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+        return res.status(500).json(err)
+    } else if (err) {
+        return res.status(500).json(err)
+    }
+
     Problem.findOne({_id: req.params.id}).then(problem => {
       if(problem) {
-        problem.img.data = fs.readFileSync(req.file.path);
-        problem.save().then(() => console.log('Saved image')).catch(err => {
-          console.log(err);
+        let images = [];
+        req.files.forEach((file, index) => {
+          let image = fs.readFileSync(file.path);
+          images.push(image);
+        })
+        problem.img.data = images;
+        problem.save().then(() => {}).catch(err => {
+          return err;
       })
       } 
     })
-   }
- })
- res.json({'message': 'ok'});
+  })
+ return res.json({'message': 'ok'});
 })
 
 module.exports = router;  

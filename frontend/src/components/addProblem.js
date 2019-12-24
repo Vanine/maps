@@ -6,6 +6,10 @@ import { connect } from "react-redux";
 import { addPoint } from '../actions/addpoint';
 import { setPoints } from '../actions/setpoints';
 import FormItem from 'antd/lib/form/FormItem';
+import TabBar from './tabBar';
+import DropToUpload from 'react-drop-to-upload';
+import {withRouter} from 'react-router-dom';
+import Modal1 from './modal';
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -13,27 +17,42 @@ class AddProblemForm extends React.Component {
     state = {
       confirmDirty: false,
       autoCompleteResult: [],
-      selectedFile: null,
+      selectedFiles: [],
+      point: undefined
     };
     constructor(props) {
       super(props);
       this.fileInput = React.createRef();
     }
     onChangeHandler = event => {
-      this.setState({
-        selectedFile: event.target.files[0],
-        loaded: 0,
-      })
+        this.setState({
+          selectedFiles: [...this.state.selectedFiles, event.target.files[0]],
+          loaded: 0,
+        })
+    }
+    onDrop = (files) => {
+        this.setState({
+          selectedFiles: [...this.state.selectedFiles, ...files],
+          loaded: 0,
+        })
+    }
+    handleSelect = (point) => {
+      this.setState({point: point});
+      this.props.form.setFieldsValue({
+        'latitude': Number(point.lat),
+        'longitude':  Number(point.lng),
+    });
     }
     handleSubmit = e => {
       e.preventDefault();
       this.props.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
-          let data;
-          if(this.state.selectedFile) {
-            data = new FormData();
-            data.append('file', this.state.selectedFile);
-          }
+          let data = new FormData()
+          if(this.state.selectedFiles) {
+            for(let x = 0; x < this.state.selectedFiles.length; x++) {
+                data.append('files', this.state.selectedFiles[x])
+            }         
+         }
           const newProblem = {
             category: values.category,
             longitude: values.longitude,
@@ -54,25 +73,24 @@ class AddProblemForm extends React.Component {
                 },
         }).then(response => response.json())
         .then(resp => {
-          if(this.state.selectedFile !== null) {
+          if(this.state.selectedFiles) {
             axios({
               method: 'post',
               url: `http://localhost:3001/upload_file/${resp.id}`,
               data: data,
-            }).then(() => this.setState({selectedFile: null}))
+            }).then(() => this.setState({selectedFiles: []}))
           }
       })
         .then(() => {
-          this.setState({selectedFile: null});
+          this.setState({selectedFiles: []});
           this.props.addPoint(newPoint);
+          this.props.form.resetFields();
       })
-        .catch(error => console.log('error:', error));
+        .catch(error => {throw error});
       }
-      this.props.form.resetFields();
       })};
 
     handleChange = (value) => {
-        console.log(`Selected ${value}`);
     };
 
     handleConfirmBlur = e => {
@@ -84,7 +102,7 @@ class AddProblemForm extends React.Component {
       const { getFieldDecorator } = this.props.form;
       const formStyle = {
           marginLeft: '20%',
-          marginTop: '3%',
+          marginTop: '1%',
           width: '50%'
       }
       const formItemLayout = {
@@ -110,6 +128,8 @@ class AddProblemForm extends React.Component {
         },
       };
        return (
+         <div>
+        <TabBar />
         <Form {...formItemLayout} onSubmit={this.handleSubmit} className='form' style={formStyle}>
              <Form.Item label={<span>Category</span>}>
              {getFieldDecorator('category', {
@@ -120,6 +140,7 @@ class AddProblemForm extends React.Component {
                 <Option value="2">Trash is placed in the wrong place</Option>
             </Select>)}
           </Form.Item>
+          <Modal1 handleSelect={this.handleSelect}/>
           <Form.Item label="Latitude">
             {getFieldDecorator('latitude', {
               rules: [
@@ -133,7 +154,7 @@ class AddProblemForm extends React.Component {
                       callback('Invalid value!');
                       return;
                     }
-                    if(typeof(value) !== 'number') {
+                    if(typeof(value) != 'number') {
                       callback('Latitude is not a number');
                       return;
                     }
@@ -158,7 +179,7 @@ class AddProblemForm extends React.Component {
                       callback('Invalid value!');
                       return;
                     }
-                    if(typeof(value) !== 'number') {
+                    if(typeof(value) != 'number') {
                       callback('Longitude is not a number');
                       return;
                     }
@@ -189,19 +210,34 @@ class AddProblemForm extends React.Component {
           </Form.Item>  
           <FormItem >
           {getFieldDecorator('file', {
-            })(<Input type='file' name = 'file' onChange={this.onChangeHandler} ref={this.fileInput} style={{width: '60%', marginLeft: '33%'}}/>)}          
+            })(<Input type='file' name = 'files' onChange={this.onChangeHandler} ref={this.fileInput} style={{width: '65%', marginLeft: '34%'}}/>)}
+                 <div style={{width: '66%', marginLeft: '36%', color: 'black'}}>Or</div> 
+             <DropToUpload style={{width: '65%', marginLeft: '34%', border: '1px solid gray', height: '100px', overflow: 'scroll'}} onDrop={this.onDrop}>
+          {
+            <ul style={{marginLeft: this.state.selectedFiles.length > 0 ? '-70px' : '-30px'}}> {
+            this.state.selectedFiles.length > 0 ? this.state.selectedFiles.map((file, index) => {
+              return (<ol key={index} style={{marginBottom: '-18px'}}>
+                  {file.name}
+                </ol>)
+            }) : "Drop here image..."
+           } </ul>
+          }
+          </DropToUpload>         
             </FormItem>   
           <Form.Item {...tailFormItemLayout}>
             <Button type="primary" htmlType="submit">
               Add
             </Button>
           </Form.Item>
+          
         </Form>
+        </div>
       );
     }
   }
   
 const WrappedAddProblemForm = Form.create({ name: 'register' })(AddProblemForm);
+const WrappedAddProblemFormWithRouter = withRouter(WrappedAddProblemForm);
 export default connect(
   state => ({
     points: state.points,
@@ -213,4 +249,4 @@ export default connect(
     setPoints: ((data) => {
       dispatch(setPoints(data))
     }),
-}))(WrappedAddProblemForm);
+}))(WrappedAddProblemFormWithRouter);

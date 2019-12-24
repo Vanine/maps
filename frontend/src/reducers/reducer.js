@@ -13,7 +13,7 @@ export default function pointsList(state = initialState, action) {
     else if (action.type === SET_POINTS) {
     return {
         ...state,
-        points: [...state.points, ...action.payload.points],
+        points: [...action.payload.points],
     }
  }
      return state;

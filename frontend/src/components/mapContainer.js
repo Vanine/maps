@@ -5,13 +5,13 @@ import { setPoints } from '../actions/setpoints';
 import GoogleMap from 'google-map-react';
 
 import '../App.css';
+import TabBarWithRouter from './tabBar';
 
 class MapContainer extends React.Component {
   constructor(props) {
     super(props);
     this.handleFetch();
   }
-  
   handleFetch = () => {
     fetch("http://localhost:3001/points",  {
       method: 'GET',
@@ -22,7 +22,7 @@ class MapContainer extends React.Component {
   .then(response => {
     this.props.setPoints({points: response.points});
   })
-  .catch(error => console.log('error:', error)); 
+  .catch(error => {throw error}); 
 }
 
 displayMarkers = () => {
@@ -34,7 +34,7 @@ displayMarkers = () => {
         options: {
           radius: 20,
           maxIntensity: 3,
-          opacity: 0.9
+          opacity: 0.9,
         }
       }
   }
@@ -49,12 +49,14 @@ displayMarkers = () => {
       paddingRight: '20px',
     };
     
-    return (
+    return (   
+      <div>     
+        <TabBarWithRouter />
       <div style={mapStyle}>
       <GoogleMap
       bootstrapURLKeys={{key: 'AIzaSyDPz11ka9meqi4YSy2gSSQEL3ZAWadNntg'}}
-      zoom={1}
-      center={{ lat: 4, lng: 5}}
+      zoom={15}
+      center={{ lat: 40.807400, lng: 44.497028}}
       margin={[100, 100, 100, 200]}
       passive={true}
       heatmapLibrary={true}          
@@ -68,7 +70,7 @@ displayMarkers = () => {
       >
       </GoogleMap>
       </div>
-     
+      </div>
     )
   }
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import MapContainer from './components/mapContainer';
 import AddProblem from './components/addProblem';
+import {BrowserRouter as Router, Route} from 'react-router-dom';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import  pointsList  from './reducers/reducer';
@@ -13,8 +14,10 @@ class App extends React.Component {
   render() {
     return (
     <Provider store={store}>
-      <AddProblem />
-      <MapContainer />
+      <Router>
+        <Route exact path="/" component={AddProblem} />
+        <Route path="/map" component={MapContainer} />
+      </Router>
     </Provider>
       )}
 }
