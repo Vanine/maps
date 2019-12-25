@@ -1,7 +1,7 @@
 import React from 'react';
 import 'antd/dist/antd.css';
 import axios from 'axios';
-import { Form, Input, Button, Select, InputNumber } from 'antd';
+import { Form, Input, Button, Select, InputNumber, message } from 'antd';
 import { connect } from "react-redux";
 import { addPoint } from '../actions/addpoint';
 import { setPoints } from '../actions/setpoints';
@@ -85,8 +85,9 @@ class AddProblemForm extends React.Component {
           this.setState({selectedFiles: []});
           this.props.addPoint(newPoint);
           this.props.form.resetFields();
+          message.info("Problem added");
       })
-        .catch(error => {throw error});
+        .catch(error => {message.error("Something went wrong")});
       }
       })};
 
