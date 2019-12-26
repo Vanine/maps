@@ -7,9 +7,10 @@ import { addPoint } from '../actions/addpoint';
 import { setPoints } from '../actions/setpoints';
 import FormItem from 'antd/lib/form/FormItem';
 import TabBar from './tabBar';
-import DropToUpload from 'react-drop-to-upload';
 import {withRouter} from 'react-router-dom';
-import Modal1 from './modal';
+import ModalWithMap from './modal';
+import Dropzone from 'react-dropzone';
+import {useDropzone} from 'react-dropzone';
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -18,7 +19,7 @@ class AddProblemForm extends React.Component {
       confirmDirty: false,
       autoCompleteResult: [],
       selectedFiles: [],
-      point: undefined
+      point: undefined,
     };
     constructor(props) {
       super(props);
@@ -37,11 +38,35 @@ class AddProblemForm extends React.Component {
         })
     }
     handleSelect = (point) => {
-      this.setState({point: point});
-      this.props.form.setFieldsValue({
-        'latitude': Number(point.lat),
-        'longitude':  Number(point.lng),
-    });
+      if(point) {
+        this.setState({point: point});
+        this.props.form.setFieldsValue({
+          'latitude': Number(point.lat),
+          'longitude':  Number(point.lng),
+      });
+      }
+    }
+   Basic(props) {
+      const {acceptedFiles, getRootProps, getInputProps} = useDropzone();
+      
+      const files = acceptedFiles.map(file => (
+        <li key={file.path}>
+          {file.path} - {file.size} bytes
+        </li>
+      ));
+    
+      return (
+        <section className="container">
+          <div {...getRootProps({className: 'dropzone'})}>
+            <input {...getInputProps()} />
+            <p>Drag 'n' drop some files here, or click to select files</p>
+          </div>
+          <aside>
+            <h4>Files</h4>
+            <ul>{files}</ul>
+          </aside>
+        </section>
+      );
     }
     handleSubmit = e => {
       e.preventDefault();
@@ -59,12 +84,7 @@ class AddProblemForm extends React.Component {
             latitude: values.latitude,
             description: values.description,
             image: data
-        };
-          const newPoint = {
-            latitude: values.latitude,
-            longitude: values.longitude
-          }        
-
+        };       
         fetch("http://localhost:3001/add_problem", {
             method: 'POST',
             body: JSON.stringify(newProblem),
@@ -83,7 +103,7 @@ class AddProblemForm extends React.Component {
       })
         .then(() => {
           this.setState({selectedFiles: []});
-          this.props.addPoint(newPoint);
+          this.props.addPoint(newProblem);
           this.props.form.resetFields();
           message.info("Problem added");
       })
@@ -102,10 +122,16 @@ class AddProblemForm extends React.Component {
     render() {
       const { getFieldDecorator } = this.props.form;
       const formStyle = {
-          marginLeft: '20%',
+          marginLeft: '24%',
           marginTop: '1%',
-          width: '50%'
+          width: '40%'
       }
+      const dropzoneStyle = {
+        width  : "100%",
+        height : "20%",
+        border : "1px solid black",
+        marginLeft : '30%'
+    };
       const formItemLayout = {
         labelCol: {
           xs: { span: 24 },
@@ -129,7 +155,7 @@ class AddProblemForm extends React.Component {
         },
       };
        return (
-         <div>
+         <div style={{overflowY: 'auto'}}>
         <TabBar />
         <Form {...formItemLayout} onSubmit={this.handleSubmit} className='form' style={formStyle}>
              <Form.Item label={<span>Category</span>}>
@@ -141,7 +167,7 @@ class AddProblemForm extends React.Component {
                 <Option value="2">Trash is placed in the wrong place</Option>
             </Select>)}
           </Form.Item>
-          <Modal1 handleSelect={this.handleSelect}/>
+          <ModalWithMap handleSelect={this.handleSelect}/>
           <Form.Item label="Latitude">
             {getFieldDecorator('latitude', {
               rules: [
@@ -210,20 +236,29 @@ class AddProblemForm extends React.Component {
             })(<TextArea rows={3} />)}
           </Form.Item>  
           <FormItem >
-          {getFieldDecorator('file', {
-            })(<Input type='file' name = 'files' onChange={this.onChangeHandler} ref={this.fileInput} style={{width: '65%', marginLeft: '34%'}}/>)}
-                 <div style={{width: '66%', marginLeft: '36%', color: 'black'}}>Or</div> 
-             <DropToUpload style={{width: '65%', marginLeft: '34%', border: '1px solid gray', height: '100px', overflow: 'scroll'}} onDrop={this.onDrop}>
-          {
+         <div >
+        <Dropzone onDrop={this.onDrop} style={dropzoneStyle}>
+            {({getRootProps, getInputProps}) => (
+              <section>
+                <div {...getRootProps()} style={{width: '65%', marginLeft: '34%', border: '1px solid black', borderStyle: 'dashed', height: '150px', overflow: 'scroll',
+                background: 'rgb(162, 195, 233)', display: 'table'}}>
+                  <input {...getInputProps()} />
+                  {
             <ul style={{marginLeft: this.state.selectedFiles.length > 0 ? '-70px' : '-30px'}}> {
             this.state.selectedFiles.length > 0 ? this.state.selectedFiles.map((file, index) => {
               return (<ol key={index} style={{marginBottom: '-18px'}}>
                   {file.name}
                 </ol>)
-            }) : "Drop here image..."
+            }) : <p style={{textAlign: 'center', marginTop: '10%', fontSize: '23px'
+          }}>
+              Drop here images...
+            </p>
            } </ul>
-          }
-          </DropToUpload>         
+          } </div>
+              </section>
+            )}
+          </Dropzone>
+        </div>        
             </FormItem>   
           <Form.Item {...tailFormItemLayout}>
             <Button type="primary" htmlType="submit">

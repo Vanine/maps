@@ -1,7 +1,7 @@
 import { Modal, Button } from 'antd';
 import React from 'react';
-import GoogleMap1 from './googleMap';
-export default class Modal1 extends React.Component {
+import SmallMap from './smallMap';
+export default class ModalWithMap extends React.Component {
   state = {
     point: undefined,
     visible: false,
@@ -12,8 +12,7 @@ export default class Modal1 extends React.Component {
       visible: true,
     });
   };
-
-handleCancel = () => {
+  handleCancel = () => {
     this.setState({ visible: false, value: '' , point: undefined});
   };
   handleClick = (point) => {
@@ -47,22 +46,21 @@ handleCancel = () => {
               Cancel
             </Button>,
             <Button key="submit" type='primary' onClick={this.handleSelect}>
-            Ok
+              Ok
             </Button>
           ]}
         >
-          {this.state.point ? 
-          <div>
-           <div>
-           Latitude: {this.state.point.lat} 
+          <div style={{display: 'flex'}}>
+           <div style={{width: '48%', marginLeft: '2%'}}>
+           Latitude: {this.state.point ? this.state.point.lat : ""} 
            </div>
            <div>
-           Longitude: {this.state.point.lng}
+           Longitude: {this.state.point ? this.state.point.lng : ""}
            </div>  
-          </div> : null
-        }
+          </div> 
+        
           
-          <GoogleMap1 handleClick={this.handleClick}/>
+          <SmallMap handleClick={this.handleClick} isVisible={this.state.visible && this.state.point} />
         </Modal>
       </div>
     );

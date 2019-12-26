@@ -8,7 +8,7 @@ const PointSchema = new mongoose.Schema({
   longitude: {
     type: Number,
     required: true
-  }
+  },
 });
 
 module.exports = mongoose.model('Point', PointSchema, 'points');

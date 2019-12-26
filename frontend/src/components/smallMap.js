@@ -1,17 +1,31 @@
 import React from 'react';
 import GoogleMap from 'google-map-react';
+import Marker from './marker';
 
-
-
-export default class GoogleMap1 extends React.Component {
+export default class SmallMap extends React.Component {
+   constructor(props) {
+     super(props)
+     this.state = {
+       point: undefined,
+     }
+   }
     handleClick = (e) => {
-        // let latitude = e.latLng.lat();
-        // let longtitude  = e.latLng.lng();
         let point = {
             lat: e['lat'],
             lng: e['lng']
         };
         this.props.handleClick(point);
+        this.setState({
+          point: point,
+        })
+    }
+    setMarker = () => {
+      if(this.state.point && this.props.isVisible) {
+        return (<Marker 
+          lat={this.state.point.lat} 
+          lng={this.state.point.lng} />)
+      }
+      else return null;
     }
   render() {
     const mapStyle = {
@@ -38,6 +52,7 @@ export default class GoogleMap1 extends React.Component {
         scaleControl: true, 
       }}
       >
+        {this.setMarker()}
       </GoogleMap>
       </div>
     )
