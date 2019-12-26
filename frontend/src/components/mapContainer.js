@@ -61,7 +61,7 @@ displayMarkers = () => {
     const mapStyle = {
       marginTop: '20px',
       width: '100%',
-      height: `${window.innerHeight-150}px`,
+      height: `${window.innerHeight*0.8}px`,
       paddingLeft: '2%',
       paddingRight: '2%',
     };
