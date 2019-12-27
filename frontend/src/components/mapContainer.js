@@ -61,7 +61,14 @@ handleClick = (point) => {
     })
   }
 };
-
+handleClickOnMap = (value) => {
+  this.setState({
+    point: undefined,
+    visible: false,
+    lat: undefined,
+    lng: undefined,
+  })
+}
 displayMarkers = () => {
   let arr = [];
       if(!this.state.selectedCategory) {
@@ -131,7 +138,8 @@ displayMarkers = () => {
       center={{lat: 40.807400, lng: 44.497028}}
       margin={[100, 100, 100, 200]}
       passive={true}
-      heatmapLibrary={true}          
+      heatmapLibrary={true} 
+      onClick={this.handleClickOnMap}         
       heatmap={this.displayMarkers()}
       yesIWantToUseGoogleMapApiInternals
       defaultOptions={{

@@ -1,12 +1,26 @@
 #infoWindow {
-    box-sizing: border-box;
     background: rgb(124, 176, 176);
+    position: relative;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
     min-width: 300px;
     min-height: 90px;
-    border: 1px solid darkslategray;
-    color: black;
+    color: cornsilk;
     font-size: 18px;
-    word-wrap: none;
     text-align: center;
     padding: 10px;
-}
+    margin-left: 26px;
+    margin-top: -40px;
+  }
+  #infoWindow:before {
+    content: "";
+    position: absolute;
+    right: 100%;
+    top: 26px;
+    width: 0;
+    height: 0;
+    border-top: 13px solid transparent;
+    border-right: 26px solid rgb(124, 176, 176);
+    border-bottom: 13px solid transparent;
+  }
