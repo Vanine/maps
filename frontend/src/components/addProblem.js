@@ -1,7 +1,7 @@
 import React from 'react';
 import 'antd/dist/antd.css';
 import axios from 'axios';
-import { Form, Input, Button, Select, InputNumber, message } from 'antd';
+import { Form, Input, Button, Select, InputNumber, message, Icon } from 'antd';
 import { connect } from "react-redux";
 import { addPoint } from '../actions/addpoint';
 import { setPoints } from '../actions/setpoints';
@@ -162,7 +162,7 @@ class AddProblemForm extends React.Component {
              {getFieldDecorator('category', {
                 initialValue: '0'
             })(<Select style={{ width: '100%' }} onChange={this.handleChange}>
-                <Option value="0">Garbage disposal is not done on time</Option>
+                <Option value="0">Garbage disposal isn't done on time</Option>
                 <Option value="1">Trash has no lid</Option>
                 <Option value="2">Trash is placed in the wrong place</Option>
             </Select>)}
@@ -244,14 +244,16 @@ class AddProblemForm extends React.Component {
                 background: 'rgb(162, 195, 233)', display: 'table'}}>
                   <input {...getInputProps()} />
                   {
-            <ul style={{marginLeft: this.state.selectedFiles.length > 0 ? '-70px' : '-30px'}}> {
+            <ul style={{marginLeft: this.state.selectedFiles.length > 0 ? '-70px' : '-30px', marginRight:'20px'}}> {
             this.state.selectedFiles.length > 0 ? this.state.selectedFiles.map((file, index) => {
               return (<ol key={index} style={{marginBottom: '-18px'}}>
                   {file.name}
                 </ol>)
-            }) : <p style={{textAlign: 'center', marginTop: '10%', fontSize: '23px'
+            }) : <p style={{textAlign: 'center', marginTop: '10%', fontSize: '17px'
           }}>
-              Drop here images...
+            <Icon type="upload" style={{fontSize: '55px'}} /> <br />
+             <span style={{fontWeight: 'bolder'}}>Chose an image </span> 
+             <span>or drag it here</span> 
             </p>
            } </ul>
           } </div>

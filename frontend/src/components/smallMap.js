@@ -21,7 +21,7 @@ export default class SmallMap extends React.Component {
     }
     setMarker = () => {
       if(this.state.point && this.props.isVisible) {
-        return (<Marker 
+        return (<Marker visible={true}
           lat={this.state.point.lat} 
           lng={this.state.point.lng} />)
       }
