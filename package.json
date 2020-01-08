@@ -1,0 +1,21 @@
+{
+  "name": "maps",
+  "version": "1.0.0",
+  "description": "<!-- ***Install mongodb***",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cd backend && node server.js",
+"heroku-postbuild": "cd frontend && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vanine/maps.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Vanine/maps/issues"
+  },
+  "homepage": "https://github.com/Vanine/maps#readme"
+}
