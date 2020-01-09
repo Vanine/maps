@@ -1,21 +1,22 @@
 {
-  "name": "maps",
+  "name": "backend",
   "version": "1.0.0",
-  "description": "<!-- ***Install mongodb***",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cd backend && node server.js",
-"heroku-postbuild": "cd frontend && npm run build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Vanine/maps.git"
+    "start": "node server.js",
+    "heroku-postbuild": "cd frontend && npm install && npm run build"
   },
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Vanine/maps/issues"
-  },
-  "homepage": "https://github.com/Vanine/maps#readme"
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "mongodb": "^3.4.0",
+    "mongoose": "^5.8.0",
+    "multer": "^1.4.2"
+  }
 }
