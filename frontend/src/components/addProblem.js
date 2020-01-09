@@ -252,7 +252,7 @@ class AddProblemForm extends React.Component {
             }) : <p style={{textAlign: 'center', marginTop: '10%', fontSize: '17px'
           }}>
             <Icon type="upload" style={{fontSize: '55px'}} /> <br />
-             <span style={{fontWeight: 'bolder'}}>Chose an image </span> 
+             <span style={{fontWeight: 'bolder'}}>Choose an image </span> 
              <span>or drag it here</span> 
             </p>
            } </ul>
