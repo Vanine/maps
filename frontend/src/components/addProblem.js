@@ -85,7 +85,7 @@ class AddProblemForm extends React.Component {
             description: values.description,
             image: data
         };       
-        fetch("http://localhost:3001/add_problem", {
+        fetch(`http://localhost:${process.env.PORT || 3001}/add_problem`, {
             method: 'POST',
             body: JSON.stringify(newProblem),
             headers: {
@@ -96,7 +96,7 @@ class AddProblemForm extends React.Component {
           if(this.state.selectedFiles) {
             axios({
               method: 'post',
-              url: `http://localhost:3001/upload_file/${resp.id}`,
+              url: `http://localhost:${process.env.PORT || 3001}/upload_file/${resp.id}`,
               data: data,
             }).then(() => this.setState({selectedFiles: []}))
           }

@@ -23,7 +23,7 @@ class MapContainer extends React.Component {
     }
   }
   handleFetch = () => {
-    fetch("http://localhost:3001/problems",  {
+    fetch(`http://localhost:${process.env.PORT || 3001}/problems`,  {
       method: 'GET',
       headers: {
          'Content-Type': 'application/x-www-form-urlencoded',
