@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from "react-redux";
+import axios from 'axios';
 import { addPoint } from '../actions/addpoint';
 import { setPoints } from '../actions/setpoints';
 import GoogleMap from 'google-map-react';
@@ -23,16 +24,10 @@ class MapContainer extends React.Component {
     }
   }
   handleFetch = () => {
-    fetch(`http://localhost:3001/problems`,  {
-      method: 'GET',
-      headers: {
-         'Content-Type': 'application/x-www-form-urlencoded',
-      },
-  }).then(response => response.json())
-  .then(response => {
-    this.props.setPoints({points: response.points});
-  })
-  .catch(error => {throw error}); 
+     axios.get('/problems')
+    .then(response => {
+      this.props.setPoints({points: response.data.points})
+    }).catch(error => {throw error});
 }
 handleChange = (value) => {
   this.setState({
