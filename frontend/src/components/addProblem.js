@@ -94,11 +94,9 @@ class AddProblemForm extends React.Component {
         }).then(response => response.json())
         .then(resp => {
           if(this.state.selectedFiles) {
-            axios({
-              method: 'post',
-              url: `/upload_file/${resp.id}`,
-              data: data,
-            }).then(() => this.setState({selectedFiles: []}))
+            axios.post(`/upload_file`, data, {params: {id: resp.id}})
+            .then(() => {
+              this.setState({selectedFiles: []})})
           }
       })
         .then(() => {

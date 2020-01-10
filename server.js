@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 3001;
 const routes = require('./routes/index');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(Cors());
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Credentials', true);

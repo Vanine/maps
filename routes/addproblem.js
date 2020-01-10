@@ -41,29 +41,35 @@ router.post('/add_problem', (req, res) => {
           return err;
       })
 });
-router.post('/upload_file/:id', (req, res) => {
+router.post('/upload_file', (req, res) => {
   upload(req, res, function (err) {
     if (err instanceof multer.MulterError) {
         return res.status(500).json(err)
     } else if (err) {
         return res.status(500).json(err)
     }
-
-    Problem.findOne({_id: req.params.id}).then(problem => {
-      if(problem) {
+    if(req.query.id.length !== 24) {
+      return res.json({"message": "invalid parameter"});
+    }
+    Problem.findOne({_id: req.query.id}).then(problem => {
+       if(problem) {
         let images = [];
         req.files.forEach((file, index) => {
           let image = fs.readFileSync(file.path);
           images.push(image);
         })
         problem.img.data = images;
-        problem.save().then(() => {}).catch(err => {
+        problem.save().then(() => {
+          return res.json({'message': 'ok'});
+        }).catch(err => {
           return err;
       })
+      }
+      else {
+        return res.json({"message": "no problem"});
       } 
-    })
+     })
   })
- return res.json({'message': 'ok'});
 })
 
 module.exports = router;  
