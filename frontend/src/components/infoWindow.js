@@ -7,6 +7,11 @@ export default class InfoWindow extends React.Component {
             imgURL: this.props.point.img.data
         }
     }
+    componentWillReceiveProps() {
+        this.setState({
+            imgURL: ''
+        })
+    }
     componentDidUpdate() {
         if(this.props.point && this.props.point.img.data != this.state.imgURL) {
             this.setState({
@@ -16,7 +21,7 @@ export default class InfoWindow extends React.Component {
     }
     render() {
         return (
-            <div  id='infoWindow' style={{display : this.props.visible ? 'inherit' : 'none'}}>
+            <div  id='infoWindow'>
              {this.props.point ? 
              (<React.Fragment>
                <div>

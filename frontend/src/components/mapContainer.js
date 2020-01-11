@@ -52,8 +52,16 @@ handleClick = (point) => {
         visible: !this.state.visible
       })
     }
-
 };
+
+showInfowindow = () => {
+  if(this.state.visible && this.state.point) {
+    return (
+      <InfoWindow lat={this.state.lat} lng={this.state.lng} point={this.state.point}/> 
+    )
+  }
+  else return null;
+}
 handleClickOnMap = (value) => {
   this.setState({
     point: undefined,
@@ -141,9 +149,7 @@ displayMarkers = () => {
         scaleControl: true, 
       }}
       >
-       {this.state.point ? 
-       <InfoWindow visible={this.state.visible} lat={this.state.lat} lng={this.state.lng} point={this.state.point}/> 
-       : null} 
+        {this.showInfowindow()} 
         {this.setMarkers()}
       </GoogleMap>
       </div>
