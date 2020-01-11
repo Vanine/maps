@@ -36,8 +36,8 @@ export default class InfoWindow extends React.Component {
                     Longitude: {this.props.point.longitude}
                </div>
                <div>
-                  {this.props.point && this.props.point.img.data.length > 0 ? <img style={{height: '80px', width: '100px', marginTop: '5px'}} 
-                  src={`data:image/jpeg;base64, ${this.arrayBufferToBase64(this.props.point.img.data[0].data)}`} 
+                  {this.props.point && this.props.point.img.data ? <img style={{height: '80px', width: '100px', marginTop: '5px'}} 
+                  src={`${this.props.point.img.data}`} 
                   alt='Helpful alt text'/> : null} 
                </div>
              </React.Fragment>

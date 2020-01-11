@@ -18,7 +18,7 @@ const ProblemSchema = new mongoose.Schema({
     required: true
   },
   img: { 
-    data: [Buffer], 
+    data: String,
     required: false }
 });
 

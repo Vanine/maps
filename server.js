@@ -21,7 +21,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/mydb', {u
     console.log("Connected to Mongo");
     });
 app.use('/', routes);
-
+app.use(express.static('public'));
 if(process.env.NODE_ENV === 'production') {
   app.use(express.static('frontend/build'));
   app.get('*', (req, res) => {

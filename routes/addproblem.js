@@ -9,7 +9,7 @@ var storage = multer.diskStorage({
   cb(null, 'public')
 },
 filename: function (req, file, cb) {
-  cb(null, Date.now() + '-' +file.originalname )
+  cb(null, file.originalname )
 }
 })
 
@@ -26,6 +26,7 @@ router.post('/add_problem', (req, res) => {
           description: obj.description,
           latitude: obj.latitude,
           longitude: obj.longitude,
+          img: {data: obj.image}
         })
         var point = new Point({
           latitude: obj.latitude,
@@ -48,27 +49,9 @@ router.post('/upload_file', (req, res) => {
     } else if (err) {
         return res.status(500).json(err)
     }
-    if(req.query.id.length !== 24) {
-      return res.json({"message": "invalid parameter"});
+    else {
+      return res.json({'message': 'image uploaded'});
     }
-    Problem.findOne({_id: req.query.id}).then(problem => {
-       if(problem) {
-        let images = [];
-        req.files.forEach((file, index) => {
-          let image = fs.readFileSync(file.path);
-          images.push(image);
-        })
-        problem.img.data = images;
-        problem.save().then(() => {
-          return res.json({'message': 'ok'});
-        }).catch(err => {
-          return err;
-      })
-      }
-      else {
-        return res.json({"message": "no problem"});
-      } 
-     })
   })
 })
 

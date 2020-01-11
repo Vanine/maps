@@ -72,18 +72,20 @@ class AddProblemForm extends React.Component {
       e.preventDefault();
       this.props.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
-          let data = new FormData()
+          let data = new FormData();
+          let url = '';
           if(this.state.selectedFiles) {
             for(let x = 0; x < this.state.selectedFiles.length; x++) {
-                data.append('files', this.state.selectedFiles[x])
-            }         
+                data.append('files', this.state.selectedFiles[x]);
+            }  
+            url = this.state.selectedFiles[0].name;       
          }
           const newProblem = {
             category: values.category,
             longitude: values.longitude,
             latitude: values.latitude,
             description: values.description,
-            image: data
+            image: url,
         };  
         fetch(`/add_problem`, {
             method: 'POST',
@@ -94,7 +96,7 @@ class AddProblemForm extends React.Component {
         }).then(response => response.json())
         .then(resp => {
           if(this.state.selectedFiles) {
-            axios.post(`/upload_file`, data, {params: {id: resp.id}})
+            axios.post(`/upload_file`, data)
             .then(() => {
               this.setState({selectedFiles: []})})
           }
