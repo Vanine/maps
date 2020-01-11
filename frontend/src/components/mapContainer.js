@@ -39,22 +39,20 @@ handleChange = (value) => {
   })
 };
 handleClick = (point) => {
-  if(this.state.point !== point) {
-    this.setState({
-      visible: true,
-      lat: point ? point.latitude : 0,
-      lng: point ? point.longitude : 0,
-      point: point ? point : undefined
-    })
-  }
-  else {
-    this.setState({
-      visible: !this.state.visible,
-      lat: point ? point.latitude : 0,
-      lng: point ? point.longitude : 0,
-      point: point ? point : undefined
-    })
-  }
+    if(this.state.point !== point) {
+      this.setState({
+        visible: true,
+        lat: point.latitude,
+        lng: point.longitude,
+        point: point
+      })
+    }
+    else {
+      this.setState({
+        visible: !this.state.visible
+      })
+    }
+
 };
 handleClickOnMap = (value) => {
   this.setState({
@@ -143,7 +141,9 @@ displayMarkers = () => {
         scaleControl: true, 
       }}
       >
-        <InfoWindow visible={this.state.visible} lat={this.state.lat || 40} lng={this.state.lng || 40} point={this.state.point}/>
+       {this.state.point ? 
+       <InfoWindow visible={this.state.visible} lat={this.state.lat} lng={this.state.lng} point={this.state.point}/> 
+       : null} 
         {this.setMarkers()}
       </GoogleMap>
       </div>

@@ -4,21 +4,15 @@ export default class InfoWindow extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            width: 0,
-            height: 0
+            imgURL: this.props.point.img.data
         }
     }
-    arrayBufferToBase64 = (buffer) => {
-        var binary = '';
-        var bytes = [].slice.call(new Uint8Array(buffer));
-        bytes.forEach((b) => binary += String.fromCharCode(b));
-        return window.btoa(binary);
-    }
-    componentWillReceiveProps() {
-        this.setState({
-            width: document.getElementById('infoWindow').clientWidth,
-            height: document.getElementById('infoWindow').clientHeight
-        })
+    componentDidUpdate() {
+        if(this.props.point && this.props.point.img.data != this.state.imgURL) {
+            this.setState({
+                imgURL: this.props.point.img.data
+            })
+        }
     }
     render() {
         return (
@@ -36,8 +30,8 @@ export default class InfoWindow extends React.Component {
                     Longitude: {this.props.point.longitude}
                </div>
                <div>
-                  {this.props.point && this.props.point.img.data ? <img style={{height: '80px', width: '100px', marginTop: '5px'}} 
-                  src={`${this.props.point.img.data}`} 
+                  {this.props.point && this.props.point.img && this.props.point.img.data ? <img style={{height: '80px', width: '100px', marginTop: '5px'}} 
+                  src={`${this.state.imgURL}`} 
                   alt='Helpful alt text'/> : null} 
                </div>
              </React.Fragment>
