@@ -21,18 +21,15 @@ export default class InfoWindow extends React.Component {
     }
     render() {
         return (
-            <div  id='infoWindow'>
+            <div  id='infoWindow' style={this.props.point.description ? {minWidth: '350px'} : {minWidth: '200px'}}>
              {this.props.point ? 
              (<React.Fragment>
-               <div>
-                    {this.props.point.category === '0' ? "Garbage disposal isn't done on time" : this.props.point.category === '1' ?
-                    "Trash has no lid" : this.props.point.category === '2' ? "Trash is placed in the wrong place" : ""}
+               <div style={{fontSize: '95%', fontStyle: 'italic', fontWeight: '700'}}> 
+                    {this.props.point.title}
                </div>
-               <div>
-                    Latitude: {this.props.point.latitude}
-               </div>
-               <div>
-                    Longitude: {this.props.point.longitude}
+               {this.props.point.description ? <div style={{fontSize: '85%', textAlign: 'justify'}}> 
+                    {this.props.point.description}
+               </div> : null} <div>
                </div>
                <div>
                   {this.props.point && this.props.point.img && this.props.point.img.data ? <img style={{height: '80px', width: '100px', marginTop: '5px'}} 

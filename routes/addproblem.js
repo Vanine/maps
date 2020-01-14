@@ -26,6 +26,7 @@ router.post('/add_problem', (req, res) => {
           description: obj.description,
           latitude: obj.latitude,
           longitude: obj.longitude,
+          title: obj.title,
           img: {data: obj.image}
         })
         var point = new Point({

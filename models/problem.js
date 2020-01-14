@@ -9,6 +9,10 @@ const ProblemSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  title: {
+    type: String,
+    required: true
+  },
   latitude: {
     type: Number,
     required: true

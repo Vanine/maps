@@ -16,11 +16,12 @@ class MapContainer extends React.Component {
     super(props);
     this.handleFetch();
     this.state = {
-      selectedCategory: undefined,
+      selectedCategory: 3,
       visible: false,
       lat: undefined,
       lng: undefined,
-      point: undefined
+      point: undefined,
+      width: window.innerWidth,
     }
   }
   handleFetch = () => {
@@ -28,6 +29,15 @@ class MapContainer extends React.Component {
     .then(response => {
       this.props.setPoints({points: response.data.points})
     }).catch(error => {throw error});
+}
+componentDidMount() {
+  window.addEventListener('resize', this.updateWindowDimensions)
+}
+componentWillUnmount() {
+  window.removeEventListener('resize', this);
+}
+updateWindowDimensions = () => {
+  this.setState({ width: window.innerWidth });
 }
 handleChange = (value) => {
   this.setState({
@@ -72,7 +82,7 @@ handleClickOnMap = (value) => {
 }
 displayMarkers = () => {
   let arr = [];
-      if(!this.state.selectedCategory) {
+      if(this.state.selectedCategory == 3) {
         for(let i = 0; i < this.props.points.length; i++) {
             arr.push({lat: this.props.points[i].latitude, lng: this.props.points[i].longitude});
       }
@@ -94,7 +104,7 @@ displayMarkers = () => {
       }
   }
   setMarkers = () => {
-    if(!this.state.selectedCategory) {
+    if(this.state.selectedCategory == 3) {
       return (this.props.points.map((point, index) => {
         return <Marker visible={false} key={index+1} lat={point.latitude} lng={point.longitude} onClick={this.handleClick} point={point}/>
       }))
@@ -116,16 +126,18 @@ displayMarkers = () => {
       height: `${window.innerHeight*0.8}px`,
       paddingLeft: '2%',
       paddingRight: '2%',
+      paddingBottom: '2px'
     };
     
     return (   
       <div style={{overflowY: 'auto'}}>     
         <TabBarWithRouter />
-      <div style={{display: 'flex', justifyContent: 'center', marginTop: '20px'}}>
+      <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', marginTop: '20px'}}>
        <div>
          Filter by category:
        </div>
-        <Select style={{ width: '20%', marginLeft: '10px' }} onChange={this.handleChange}>
+        <Select style={{ width: this.state.width > 575 ? '20%' : '60%', marginLeft: '6px' }} onChange={this.handleChange} defaultValue='3' >
+                 <Option value="3">All</Option>
                  <Option value="0">Garbage disposal is not done on time</Option>
                  <Option value="1">Trash has no lid</Option>
                  <Option value="2">Trash is placed in the wrong place</Option>

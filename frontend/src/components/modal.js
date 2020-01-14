@@ -12,6 +12,7 @@ export default class ModalWithMap extends React.Component {
       visible: true,
     });
   };
+  
   handleCancel = () => {
     this.setState({ visible: false, value: '' , point: undefined});
   };
@@ -25,17 +26,21 @@ export default class ModalWithMap extends React.Component {
   render() {
     const { visible } = this.state;
     const modalStyle = {
-        width: '50%',
-        paddingLeft: '0%',
-        paddingRigth: '0%'
+      width: '50%',
+      paddingLeft: '0%',
+      paddingRigth: '0%'
+    }
+    const buttonStyle = {
+      marginLeft: window.innerWidth > 575 ? '33.5%' : '0%',
+      marginBottom: '20px'
     }
     return (
-      <div>
-        <Button style={{marginLeft: '33.5%', marginBottom: '20px'}} type='ghost' onClick={this.showModal}>
+      <span>
+        <Button type='ghost' onClick={this.showModal} style={buttonStyle}>
           Find a place
         </Button>
         <Modal
-        width='60%'
+        width= {window.innerWidth > 575 ? '60%' : '100%'}
         style={modalStyle}
           visible={visible}
           title="Map"
@@ -54,15 +59,13 @@ export default class ModalWithMap extends React.Component {
            <div style={{width: '48%', marginLeft: '2%'}}>
            Latitude: {this.state.point ? this.state.point.lat : ""} 
            </div>
-           <div>
+           <div style={{width: '48%', marginLeft: '2%'}}>
            Longitude: {this.state.point ? this.state.point.lng : ""}
            </div>  
           </div> 
-        
-          
           <SmallMap handleClick={this.handleClick} isVisible={this.state.visible && this.state.point} />
         </Modal>
-      </div>
+      </span>
     );
   }
 }

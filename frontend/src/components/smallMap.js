@@ -29,11 +29,11 @@ export default class SmallMap extends React.Component {
     }
   render() {
     const mapStyle = {
-      paddingTop: '20px',
+      paddingTop: window.innerWidth > 575 ? '20px' : '10px',
       width: '100%',
-      height: '70vh',
-      paddingLeft: '20px',
-      paddingRight: '20px',
+      height: '60vh',
+      paddingLeft: window.innerWidth > 575 ? '20px' : '0px',
+      paddingRight: window.innerWidth > 575 ? '20px' : '0px',
     };
     
     return (   

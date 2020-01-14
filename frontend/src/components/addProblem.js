@@ -13,13 +13,14 @@ import Dropzone from 'react-dropzone';
 import {useDropzone} from 'react-dropzone';
 const { Option } = Select;
 const { TextArea } = Input;
-
+//576 mec dzev
 class AddProblemForm extends React.Component {
     state = {
       confirmDirty: false,
       autoCompleteResult: [],
       selectedFiles: [],
       point: undefined,
+      width: window.innerWidth,
     };
     constructor(props) {
       super(props);
@@ -31,11 +32,20 @@ class AddProblemForm extends React.Component {
           loaded: 0,
         })
     }
+    componentDidMount() {
+      window.addEventListener('resize', this.updateWindowDimensions)
+    }
+    componentWillUnmount() {
+      window.removeEventListener('resize', this);
+    }
     onDrop = (files) => {
         this.setState({
           selectedFiles: [...this.state.selectedFiles, ...files],
           loaded: 0,
         })
+    }
+    updateWindowDimensions = () => {
+      this.setState({ width: window.innerWidth });
     }
     handleSelect = (point) => {
       if(point) {
@@ -74,7 +84,7 @@ class AddProblemForm extends React.Component {
         if (!err) {
           let data = new FormData();
           let url = '';
-          if(this.state.selectedFiles) {
+          if(this.state.selectedFiles.length > 0) {
             for(let x = 0; x < this.state.selectedFiles.length; x++) {
                 data.append('files', this.state.selectedFiles[x]);
             }  
@@ -85,6 +95,7 @@ class AddProblemForm extends React.Component {
             longitude: values.longitude,
             latitude: values.latitude,
             description: values.description,
+            title: values.title,
             image: url,
         };  
         fetch(`/add_problem`, {
@@ -122,16 +133,25 @@ class AddProblemForm extends React.Component {
     render() {
       const { getFieldDecorator } = this.props.form;
       const formStyle = {
-          marginLeft: '24%',
+          marginLeft: this.state.width > 575 ? '24%' : '10%',
           marginTop: '1%',
-          width: '40%'
+          width: this.state.width > 575 ? '40%' : '80%'
       }
       const dropzoneStyle = {
         width  : "100%",
-        height : "20%",
+        height : "100%",
         border : "1px solid black",
-        marginLeft : '30%'
+        // marginLeft : '30%',
     };
+    const divStyle = {
+      width: this.state.width > 575 ? '65%' : '100%', 
+      marginLeft: this.state.width > 575 ? '34%' : '0px', 
+      border: '1px solid black', 
+      borderStyle: 'dashed', 
+      height: this.state.width > 575 ? '100px' : '10p%', 
+      background: 'rgb(162, 195, 233)', 
+      display: 'table',
+    }
       const formItemLayout = {
         labelCol: {
           xs: { span: 24 },
@@ -167,6 +187,27 @@ class AddProblemForm extends React.Component {
                 <Option value="2">Trash is placed in the wrong place</Option>
             </Select>)}
           </Form.Item>
+          <Form.Item label="Title">
+            {getFieldDecorator('title', {
+              rules: [
+                {
+                  validator(rule, value, callback) {
+                    if(!value) {
+                      callback('Title is required!');
+                      return;
+                    }
+                    if(value.length > 50) {
+                      callback('Must contain at most 50 letters!');
+                      return;
+                    }
+                    else {
+                      callback();
+                    }
+                  } 
+                },
+              ],
+            })(<Input style={{width: '100%'}}/>)}
+          </Form.Item> 
           <ModalWithMap handleSelect={this.handleSelect}/>
           <Form.Item label="Latitude">
             {getFieldDecorator('latitude', {
@@ -240,8 +281,7 @@ class AddProblemForm extends React.Component {
         <Dropzone onDrop={this.onDrop} style={dropzoneStyle}>
             {({getRootProps, getInputProps}) => (
               <section>
-                <div {...getRootProps()} style={{width: '65%', marginLeft: '34%', border: '1px solid black', borderStyle: 'dashed', height: '150px', overflow: 'scroll',
-                background: 'rgb(162, 195, 233)', display: 'table'}}>
+                <div {...getRootProps()} style={divStyle}>
                   <input {...getInputProps()} />
                   {
             <ul style={{marginLeft: this.state.selectedFiles.length > 0 ? '-70px' : '-30px', marginRight:'20px'}}> {
@@ -249,9 +289,11 @@ class AddProblemForm extends React.Component {
               return (<ol key={index} style={{marginBottom: '-18px'}}>
                   {file.name}
                 </ol>)
-            }) : <p style={{textAlign: 'center', marginTop: '10%', fontSize: '17px'
+            }) : <p style={{textAlign: 'center', marginTop: '5%', fontSize: this.state.width > 575 ? '17px' : '14px'
           }}>
-            <Icon type="upload" style={{fontSize: '55px'}} /> <br />
+            <div>
+            <Icon type="upload" style={{fontSize: '200%'}} />
+            </div>
              <span style={{fontWeight: 'bolder'}}>Choose an image </span> 
              <span>or drag it here</span> 
             </p>
@@ -288,3 +330,4 @@ export default connect(
       dispatch(setPoints(data))
     }),
 }))(WrappedAddProblemFormWithRouter);
+
