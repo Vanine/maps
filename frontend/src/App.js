@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import MapContainer from './components/mapContainer';
 import AddProblem from './components/addProblem';
+import ChartsContainer from './components/chartsContainer';
 import {BrowserRouter as Router, Route} from 'react-router-dom';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
@@ -17,6 +18,7 @@ class App extends React.Component {
       <Router>
         <Route exact path="/" component={AddProblem} />
         <Route path="/map" component={MapContainer} />
+        <Route path="/charts" component={ChartsContainer} />
       </Router>
     </Provider>
       )}

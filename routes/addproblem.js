@@ -27,7 +27,8 @@ router.post('/add_problem', (req, res) => {
           latitude: obj.latitude,
           longitude: obj.longitude,
           title: obj.title,
-          img: {data: obj.image}
+          img: {data: obj.image},
+          date: Date.now(),
         })
         var point = new Point({
           latitude: obj.latitude,
@@ -43,6 +44,37 @@ router.post('/add_problem', (req, res) => {
           return err;
       })
 });
+
+router.post('/add_problems', (req, res) => {
+  for(let i = 0; i < req.body.length; i++) {
+    let new_problem;
+    let point;
+    if(req.body[i].category && req.body[i].latitude && req.body[i].longitude > -180 && req.body[i].longitude < 180 && req.body[i].title &&
+      req.body[i].latitude > -90 && req.body[i].latitude < 90) {
+      new_problem = new Problem({
+        category: req.body[i].category,
+        description: req.body[i].description,
+        latitude: req.body[i].latitude,
+        longitude: req.body[i].longitude,
+        title: req.body[i].title,
+        img: {data: req.body[i].image},
+        date: Date.now(),
+      });
+      point = new Point({
+        latitude: req.body[i].latitude,
+        longitude: req.body[i].longitude,
+      }); 
+      new_problem.save().then(() => {
+        point.save().then(() => {
+        })
+      }).catch((err) => {
+        return res.json({'message': 'mi ban en chi'})
+      })
+    }
+    else continue;
+  }
+  return res.json({'message': 'lriv fayliny pahec'});
+})
 router.post('/upload_file', (req, res) => {
   upload(req, res, function (err) {
     if (err instanceof multer.MulterError) {
@@ -54,6 +86,6 @@ router.post('/upload_file', (req, res) => {
       return res.json({'message': 'image uploaded'});
     }
   })
-})
+});
 
 module.exports = router;  

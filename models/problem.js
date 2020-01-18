@@ -21,6 +21,10 @@ const ProblemSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  date: {
+    type: Date,
+    required: true,
+  },
   img: { 
     data: String,
     required: false }

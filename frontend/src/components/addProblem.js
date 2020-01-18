@@ -11,9 +11,10 @@ import {withRouter} from 'react-router-dom';
 import ModalWithMap from './modal';
 import Dropzone from 'react-dropzone';
 import {useDropzone} from 'react-dropzone';
+import * as XLSX from 'xlsx';
+import { json } from 'body-parser';
 const { Option } = Select;
 const { TextArea } = Input;
-//576 mec dzev
 class AddProblemForm extends React.Component {
     state = {
       confirmDirty: false,
@@ -21,6 +22,7 @@ class AddProblemForm extends React.Component {
       selectedFiles: [],
       point: undefined,
       width: window.innerWidth,
+      xlsxFile: undefined
     };
     constructor(props) {
       super(props);
@@ -33,18 +35,24 @@ class AddProblemForm extends React.Component {
         })
     }
     componentDidMount() {
-      window.addEventListener('resize', this.updateWindowDimensions)
+      window.addEventListener('resize', this.updateWindowDimensions.bind(this));
     }
     componentWillUnmount() {
-      window.removeEventListener('resize', this);
+      window.removeEventListener('resize', this.updateWindowDimensions.bind(this));
     }
-    onDrop = (files) => {
+    onDropImage = (files) => {
         this.setState({
           selectedFiles: [...this.state.selectedFiles, ...files],
           loaded: 0,
         })
     }
-    updateWindowDimensions = () => {
+    onDropXlsxFile = (files) => {
+      this.setState({
+        xlsxFile: files[0],
+        loaded: 0,
+      })
+  }
+    updateWindowDimensions () {
       this.setState({ width: window.innerWidth });
     }
     handleSelect = (point) => {
@@ -106,17 +114,33 @@ class AddProblemForm extends React.Component {
                 },
         }).then(response => response.json())
         .then(resp => {
-          if(this.state.selectedFiles) {
+          if(this.state.selectedFiles.length > 0) {
             axios.post(`/upload_file`, data)
             .then(() => {
               this.setState({selectedFiles: []})})
           }
       })
+      .then(() => {
+        if(this.state.xlsxFile) {
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            var data = e.target.result;
+            var workbook = XLSX.read(data, {type: 'binary'});
+            workbook.SheetNames.forEach((sheetName) => {
+              var XL_Row_Object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+              var jsonObject = JSON.stringify(XL_Row_Object);
+              axios.post('/add_problems', XL_Row_Object).then((response) => {
+              })
+            })
+          }
+          reader.readAsBinaryString(this.state.xlsxFile);
+        }
+      })
         .then(() => {
-          this.setState({selectedFiles: []});
           this.props.addPoint(newProblem);
           this.props.form.resetFields();
-          message.info("Problem added");
+          message.info(this.state.xlsxFile ? "Problems added" : "Problem added");
+          this.setState({selectedFiles: [], xlsxFile: undefined});
       })
         .catch(error => {message.error("Something went wrong")});
       }
@@ -141,14 +165,13 @@ class AddProblemForm extends React.Component {
         width  : "100%",
         height : "100%",
         border : "1px solid black",
-        // marginLeft : '30%',
     };
     const divStyle = {
       width: this.state.width > 575 ? '65%' : '100%', 
       marginLeft: this.state.width > 575 ? '34%' : '0px', 
       border: '1px solid black', 
       borderStyle: 'dashed', 
-      height: this.state.width > 575 ? '100px' : '10p%', 
+      minHeight: this.state.width > 575 ? '120px' : '10p%', 
       background: 'rgb(162, 195, 233)', 
       display: 'table',
     }
@@ -176,9 +199,12 @@ class AddProblemForm extends React.Component {
       };
        return (
          <div style={{overflowY: 'auto'}}>
-        <TabBar />
+        <TabBar /> 
         <Form {...formItemLayout} onSubmit={this.handleSubmit} className='form' style={formStyle}>
-             <Form.Item label={<span>Category</span>}>
+       <Form.Item label={
+       <React.Fragment>
+       <span>Category</span><span style={{color: 'red'}}></span>
+       </React.Fragment>}>
              {getFieldDecorator('category', {
                 initialValue: '0'
             })(<Select style={{ width: '100%' }} onChange={this.handleChange}>
@@ -187,7 +213,10 @@ class AddProblemForm extends React.Component {
                 <Option value="2">Trash is placed in the wrong place</Option>
             </Select>)}
           </Form.Item>
-          <Form.Item label="Title">
+          <Form.Item label={
+       <React.Fragment>
+       <span>Title</span><span style={{color: 'red'}}>*</span>
+       </React.Fragment>}>
             {getFieldDecorator('title', {
               rules: [
                 {
@@ -209,13 +238,16 @@ class AddProblemForm extends React.Component {
             })(<Input style={{width: '100%'}}/>)}
           </Form.Item> 
           <ModalWithMap handleSelect={this.handleSelect}/>
-          <Form.Item label="Latitude">
+          <Form.Item label={
+       <React.Fragment>
+       <span>Latitude</span><span style={{color: 'red'}}>*</span>
+       </React.Fragment>}>
             {getFieldDecorator('latitude', {
               rules: [
                 {
                   validator(rule, value, callback) {
                     if(!value) {
-                      callback('Latitude is required');
+                      callback('Latitude is required!');
                       return;
                     }
                     if(value > 85 || value < -85) {
@@ -234,13 +266,16 @@ class AddProblemForm extends React.Component {
               ],
             })(<InputNumber style={{width: '100%'}} />)}
           </Form.Item>
-          <Form.Item label="Longitude">
+          <Form.Item label={
+       <React.Fragment>
+       <span>Longitude</span><span style={{color: 'red'}}>*</span>
+       </React.Fragment>}>
             {getFieldDecorator('longitude', {
               rules: [
                 {
                   validator(rule, value, callback) {
                     if(!value) {
-                      callback('Longitude is required');
+                      callback('Longitude is required!');
                       return;
                     }
                     if(value > 180 || value < -180) {
@@ -278,7 +313,7 @@ class AddProblemForm extends React.Component {
           </Form.Item>  
           <FormItem >
          <div >
-        <Dropzone onDrop={this.onDrop} style={dropzoneStyle}>
+        <Dropzone onDrop={this.onDropImage} style={dropzoneStyle}>
             {({getRootProps, getInputProps}) => (
               <section>
                 <div {...getRootProps()} style={divStyle}>
@@ -291,9 +326,7 @@ class AddProblemForm extends React.Component {
                 </ol>)
             }) : <p style={{textAlign: 'center', marginTop: '5%', fontSize: this.state.width > 575 ? '17px' : '14px'
           }}>
-            <div>
-            <Icon type="upload" style={{fontSize: '200%'}} />
-            </div>
+            <Icon type="upload" style={{fontSize: '200%'}} /> <br />
              <span style={{fontWeight: 'bolder'}}>Choose an image </span> 
              <span>or drag it here</span> 
             </p>
@@ -303,15 +336,38 @@ class AddProblemForm extends React.Component {
             )}
           </Dropzone>
         </div>        
-            </FormItem>   
+            </FormItem>  
+            <FormItem >
+         <div >
+        <Dropzone onDrop={this.onDropXlsxFile} style={dropzoneStyle}>
+            {({getRootProps, getInputProps}) => (
+              <section>
+                <div {...getRootProps()} style={divStyle}>
+                  <input {...getInputProps()} />
+                  {
+            this.state.xlsxFile ? 
+               (<p style={{marginLeft: this.state.xlsxFile ? '10px' : '0px', marginRight:'20px', marginBottom: '-18px'}}>
+                  {this.state.xlsxFile.name}
+                </p>)
+             : <p style={{textAlign: 'center', marginTop: '5%', fontSize: this.state.width > 575 ? '17px' : '14px'
+          }}>
+            <Icon type="upload" style={{fontSize: '200%'}} /> <br />
+             <span style={{fontWeight: 'bolder'}}>Choose an xlsx file </span> 
+             <span>or drag it here</span> 
+            </p>
+          } </div>
+              </section>
+            )}
+          </Dropzone>
+        </div>        
+            </FormItem>  
           <Form.Item {...tailFormItemLayout}>
             <Button type="primary" htmlType="submit">
               Add
             </Button>
           </Form.Item>
-          
-        </Form>
-        </div>
+         </Form>
+      </div>
       );
     }
   }
