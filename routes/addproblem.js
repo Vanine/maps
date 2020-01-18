@@ -68,12 +68,12 @@ router.post('/add_problems', (req, res) => {
         point.save().then(() => {
         })
       }).catch((err) => {
-        return res.json({'message': 'mi ban en chi'})
+        throw err;
       })
     }
     else continue;
   }
-  return res.json({'message': 'lriv fayliny pahec'});
+  return res.json({'message': 'ok'});
 })
 router.post('/upload_file', (req, res) => {
   upload(req, res, function (err) {
