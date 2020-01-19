@@ -81,7 +81,7 @@ class ChartsContainer extends React.Component {
         const pieLabels = ['Garbage disposal is not done on time', 'Trash has no lid', 'Trash is placed in wrong place'];
         const pieData = this.getPieData();
         let data = options.labels.map((value, index) => {
-            return ({x: `${value.getDay()+12}/${value.getMonth()+1}`, y: options.data[index]})
+            return ({x: `${value.getDate()}/${value.getMonth()+1}`, y: options.data[index]})
         })
         // data.push({x: "18/1", y: 4});
         // data.push({x: "20/1", y: 10});
