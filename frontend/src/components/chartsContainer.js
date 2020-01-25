@@ -40,7 +40,7 @@ class ChartsContainer extends React.Component {
             let bool;
             let date = new Date(this.props.points[i].date);
             for(j = 0; j < options.labels.length; j++) {
-                if(options.labels[j].getMonth() == date.getMonth() && options.labels[j].getDay() == date.getDay()) {
+                if(options.labels[j].getMonth() == date.getMonth() && options.labels[j].getDate() == date.getDate()) {
                     options.data[j]++;
                     bool = true;
                     break;
