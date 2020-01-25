@@ -46,7 +46,7 @@ class ChartsContainer extends React.Component {
                     break;
                 }
             }
-            if(!bool) {
+            if(bool === undefined) {
                 options.labels.push(date);
                 options.data.push(1);
             }
